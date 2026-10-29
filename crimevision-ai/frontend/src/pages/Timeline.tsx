@@ -1,0 +1,15 @@
+import { useEffect, useState } from 'react'
+import { AudioLines, Clock3, FileImage, Film, Sparkles } from 'lucide-react'
+import { api, TimelineEvent } from '../services/api'
+
+const icon = (type: string) => type.includes('video') ? Film : type.includes('audio') ? AudioLines : type.includes('upload') ? FileImage : Sparkles
+export default function Timeline() {
+  const [events, setEvents] = useState<TimelineEvent[]>([])
+  const [error, setError] = useState('')
+  useEffect(() => { api.timeline().then(data => setEvents(data.events)).catch(e => setError(e instanceof Error ? e.message : 'Could not load the timeline.')) }, [])
+  return <div className="mx-auto max-w-5xl space-y-6"><header><p className="text-xs font-medium uppercase tracking-[0.2em] text-cyan-300">Case activity</p><h1 className="mt-2 text-3xl font-semibold text-white">Forensic timeline</h1><p className="mt-2 text-sm text-slate-400">Evidence intake records and completed media reviews.</p></header>
+    {error && <p role="alert" className="rounded-lg border border-rose-900 bg-rose-950/30 p-3 text-sm text-rose-200">{error}</p>}
+    <section className="rounded-xl border border-slate-800 bg-slate-900/70 p-5"><h2 className="font-semibold text-white">Activity <span className="ml-1 text-sm font-normal text-slate-500">{events.length} events</span></h2>{events.length ? <ol className="mt-5 space-y-0">{events.map((event, i) => { const Icon = icon(event.event_type); return <li key={event.id} className="relative flex gap-4 pb-6 last:pb-0"><div className="relative flex w-10 shrink-0 justify-center"><span className="z-10 flex h-9 w-9 items-center justify-center rounded-full border border-cyan-900 bg-cyan-950 text-cyan-300"><Icon size={16}/></span>{i < events.length - 1 && <span className="absolute top-9 h-full w-px bg-slate-800"/>}</div><div className="min-w-0 flex-1 pt-1"><div className="flex flex-wrap items-center gap-2"><p className="truncate text-sm font-medium text-slate-200">{event.title}</p><span className={`rounded-full px-2 py-0.5 text-[10px] uppercase tracking-wide ${event.source === 'ai_generated' ? 'bg-violet-950 text-violet-300' : 'bg-slate-800 text-slate-400'}`}>{event.source === 'ai_generated' ? 'AI generated' : 'Recorded'}</span>{event.is_estimate && <span className="text-[10px] text-amber-300">approximate time</span>}</div><p className="mt-1 text-xs leading-5 text-slate-400">{event.description}</p>{event.media_timestamp && <p className="mt-1 font-mono text-xs text-cyan-300">Media time: {event.media_timestamp}</p>}</div><time className="flex shrink-0 items-center gap-1 text-xs text-slate-500"><Clock3 size={13}/>{new Date(event.timestamp).toLocaleString()}</time></li> })}</ol> : <p className="py-12 text-center text-sm text-slate-400">Evidence upload and analysis events will appear here.</p>}</section>
+    <p className="text-xs leading-5 text-slate-500">“Recorded” entries come from local evidence metadata. AI-generated descriptions and video timestamps are preliminary and must be verified against the original media.</p>
+  </div>
+}

@@ -1,0 +1,29 @@
+# CrimeVision AI Backend Requirements - Milestone 2 (Image Analysis)
+# Python 3.9+
+
+# Web Framework
+Flask==3.0.0
+Flask-CORS==4.0.0
+Flask-SQLAlchemy==3.1.1
+
+# Database
+SQLAlchemy>=2.0.30
+
+# Environment Variables
+python-dotenv==1.0.0
+
+# Utilities
+requests==2.31.0
+
+# Computer Vision (pre-built wheels)
+opencv-python-headless>=4.8.0
+Pillow>=10.2.0
+numpy>=1.24.0
+
+# Note: Heavy AI packages will be installed separately when needed:
+# - torch (large download, ~2GB)
+# - transformers (requires compilation or pre-built wheel)
+# - pydantic (requires compilation)
+# - faster-whisper (requires compilation)
+# - groq (has pre-built wheels)
+# - reportlab (has pre-built wheels)
